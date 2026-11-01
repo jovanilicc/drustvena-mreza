@@ -78,7 +78,7 @@ namespace drustvenaMreza.Controllers
                     max = id;
                 }
             }
-            return max;
+            return max+1;
         }
 
     }
