@@ -7,6 +7,17 @@ namespace drustvenaMreza
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            // Naredni kod se dodaje **pre** linije koda: builder.Services.AddControllers();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                               .AllowAnyHeader()
+                               .AllowAnyMethod();
+                    });
+            });
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -18,6 +29,7 @@ namespace drustvenaMreza
 
             var app = builder.Build();
 
+            app.UseCors("AllowAllOrigins");
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {

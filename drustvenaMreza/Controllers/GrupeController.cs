@@ -7,24 +7,30 @@ using System.Text.RegularExpressions;
 
 namespace drustvenaMreza.Controllers
 {
-    [Route("api/groups/{groupId}/users")]
+    [Route("api/grupe")]
     [ApiController]
     public class GrupeController : ControllerBase
     {
 
-        private KorisniciRepozitorijum korisniciRepozitorijum = new KorisniciRepozitorijum();
+       private KorisniciRepozitorijum korisniciRepozitorijum = new KorisniciRepozitorijum();
        private GrupeRepozitorijum grupeRepo = new GrupeRepozitorijum();
 
         [HttpGet]
-        public ActionResult<List<Korisnik>> GetUsersByGroup(int groupId)
+        public ActionResult<List<Korisnik>> GetAll()
+        {
+            List<Grupa> grupa = GrupeRepozitorijum.Data.Values.ToList();
+            return Ok(grupa);
+        }
+        [HttpGet("{id}/korisnici")]
+        public ActionResult<List<Korisnik>> GetUsersByGroup(int id)
         {
 
-            if (!GrupeRepozitorijum.Data.ContainsKey(groupId))
+            if (!GrupeRepozitorijum.Data.ContainsKey(id))
             {
                 return NotFound();
             }
 
-            Grupa grupa = GrupeRepozitorijum.Data[groupId];
+            Grupa grupa = GrupeRepozitorijum.Data[id];
             return Ok(grupa.Korisnici);
         }
     }
