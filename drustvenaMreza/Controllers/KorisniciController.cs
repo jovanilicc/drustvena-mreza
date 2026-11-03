@@ -64,6 +64,7 @@ namespace drustvenaMreza.Controllers
             korisnik.KorisnickoIme = updatedKorisnik.KorisnickoIme;
             korisnik.Ime = updatedKorisnik.Ime;
             korisnik.Prezime = updatedKorisnik.Prezime;
+            korisnik.DatumRodjenja = updatedKorisnik.DatumRodjenja;
             korisniciRepo.Save();
 
             return Ok(korisnik);
