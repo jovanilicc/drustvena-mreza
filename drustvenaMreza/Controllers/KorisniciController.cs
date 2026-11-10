@@ -11,79 +11,24 @@ namespace drustvenaMreza.Controllers
     [ApiController]
     public class KorisniciController : ControllerBase
     {
-        //[HttpGet]
-        //public ActionResult<List<Korisnik>> GetAll()
-        //{
-        //    KorisniciRepozitorijum korisniciRepo = new KorisniciRepozitorijum();
-        //    GrupeRepozitorijum grupeRepo = new GrupeRepozitorijum();
-
-        //    List<Korisnik> korisnici = KorisniciRepozitorijum.Data.Values.ToList();
-        //    return Ok(korisnici);
-        //}
-        //svi korisnici iz baze
+        private UserDbRepository userDbRepository = new UserDbRepository();
         [HttpGet]
-        public ActionResult<List<Korisnik>> GetAllFromDatabase()
+        public ActionResult<List<Korisnik>> GetAll()
         {
-            try
-            {
-                using SqliteConnection connection = new SqliteConnection("Data Source=database/drustvenamreza.db");
-                connection.Open();
-                string query = "SELECT * FROM Users";
-                using SqliteCommand command = new SqliteCommand(query, connection);
-                using SqliteDataReader reader = command.ExecuteReader();
-
-                List<Korisnik> results = new List<Korisnik>();
-                while (reader.Read())
-                {
-                    //Username, Name, Surname, Birthday
-                    Korisnik korisnik = new Korisnik
-                    (
-                        Convert.ToInt32(reader["Id"]),
-                        reader["Username"].ToString(),
-                        reader["Name"].ToString(),
-                        reader["Surname"].ToString(),
-                        DateTime.Parse(reader["Birthday"].ToString())
-                        
-                    );
-                    results.Add(korisnik);
-                }
-                return Ok(results);
-
-            }
-            catch (SqliteException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return StatusCode(500, "Greška pri radu sa bazom podataka.");
-            }
-            catch (FormatException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return StatusCode(500, "Greška u formatu podataka iz baze.");
-            }
-            catch (InvalidOperationException ex)
-            {
-                Console.WriteLine(ex.Message);
-                return StatusCode(500, "Neispravna operacija nad bazom podataka.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                return StatusCode(500, "Došlo je do neočekivane greške.");
-            }
-
+            List<Korisnik> korisnici = userDbRepository.GetAll();
+            return Ok(korisnici);
         }
+        
 
         [HttpGet("{id}")]
         public ActionResult<Korisnik> GetById(int id)
         {
-            KorisniciRepozitorijum korisniciRepo = new KorisniciRepozitorijum();
-            GrupeRepozitorijum grupeRepo = new GrupeRepozitorijum();
 
-            if (!KorisniciRepozitorijum.Data.ContainsKey(id))
+            if (userDbRepository.GetById(id) == null)
             {
                 return NotFound();
             }
-            return Ok(KorisniciRepozitorijum.Data[id]);
+            return Ok(userDbRepository.GetById(id));
         }
         [HttpPost]
         public ActionResult<Korisnik> Create([FromBody] Korisnik noviKorisnik)
