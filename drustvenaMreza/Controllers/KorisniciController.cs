@@ -33,53 +33,48 @@ namespace drustvenaMreza.Controllers
         [HttpPost]
         public ActionResult<Korisnik> Create([FromBody] Korisnik noviKorisnik)
         {
-            KorisniciRepozitorijum korisniciRepo = new KorisniciRepozitorijum();
-
             if (string.IsNullOrWhiteSpace(noviKorisnik.KorisnickoIme) || string.IsNullOrWhiteSpace(noviKorisnik.Ime) || string.IsNullOrWhiteSpace(noviKorisnik.Prezime))
             {
                 return BadRequest();
             }
-
-            noviKorisnik.Id = SracunajNoviId(KorisniciRepozitorijum.Data.Keys.ToList());
-            KorisniciRepozitorijum.Data[noviKorisnik.Id] = noviKorisnik;
-            korisniciRepo.Save();
-
-            return Ok(noviKorisnik);
+            Korisnik korisnik = userDbRepository.Create(noviKorisnik);
+            if(korisnik == null)
+            {
+                return NotFound();
+            }
+            return Ok(korisnik);
         }
         [HttpPut("{id}")]
         public ActionResult<Korisnik> Update(int id, [FromBody] Korisnik updatedKorisnik)
         {
-            KorisniciRepozitorijum korisniciRepo = new KorisniciRepozitorijum();
+            
             if (string.IsNullOrWhiteSpace(updatedKorisnik.KorisnickoIme) || string.IsNullOrWhiteSpace(updatedKorisnik.Ime) || string.IsNullOrWhiteSpace(updatedKorisnik.Prezime))
             {
                 return BadRequest();
             }
-            if (!KorisniciRepozitorijum.Data.ContainsKey(id))
+
+            Korisnik korisnik = userDbRepository.Update(id, updatedKorisnik);
+            if (korisnik == null)
             {
                 return NotFound();
             }
 
-            Korisnik korisnik = KorisniciRepozitorijum.Data[id];
-            korisnik.KorisnickoIme = updatedKorisnik.KorisnickoIme;
-            korisnik.Ime = updatedKorisnik.Ime;
-            korisnik.Prezime = updatedKorisnik.Prezime;
-            korisnik.DatumRodjenja = updatedKorisnik.DatumRodjenja;
-            korisniciRepo.Save();
+          
 
             return Ok(korisnik);
         }
-        private static int SracunajNoviId(List<int> korisnici)
+        [HttpDelete("{id}")]
+        public ActionResult<Korisnik> Delete(int id)
         {
-            int max = 0;
-            foreach (int id in korisnici)
-            {
-                if (max < id)
-                {
-                    max = id;
-                }
-            }
-            return max+1;
-        }
 
+            int korisnikObrisan = userDbRepository.Delete(id);
+            if (korisnikObrisan == 0)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+        
     }
 }
