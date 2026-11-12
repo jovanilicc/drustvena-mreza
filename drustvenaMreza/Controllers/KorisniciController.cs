@@ -11,7 +11,13 @@ namespace drustvenaMreza.Controllers
     [ApiController]
     public class KorisniciController : ControllerBase
     {
-        private UserDbRepository userDbRepository = new UserDbRepository();
+        private UserDbRepository userDbRepository;
+
+        public KorisniciController(IConfiguration configuration)
+        {
+            this.userDbRepository = new UserDbRepository(configuration);
+        }
+        
         [HttpGet]
         public ActionResult<List<Korisnik>> GetAll()
         {
@@ -23,12 +29,18 @@ namespace drustvenaMreza.Controllers
         [HttpGet("{id}")]
         public ActionResult<Korisnik> GetById(int id)
         {
-
-            if (userDbRepository.GetById(id) == null)
+            try
             {
-                return NotFound();
+                if (userDbRepository.GetById(id) == null)
+                {
+                    return NotFound();
+                }
+                return Ok(userDbRepository.GetById(id));
+            } catch
+            {
+                return Problem("Error occured while fetching books.");
             }
-            return Ok(userDbRepository.GetById(id));
+            
         }
         [HttpPost]
         public ActionResult<Korisnik> Create([FromBody] Korisnik noviKorisnik)
@@ -37,12 +49,20 @@ namespace drustvenaMreza.Controllers
             {
                 return BadRequest();
             }
-            Korisnik korisnik = userDbRepository.Create(noviKorisnik);
-            if(korisnik == null)
+            try
             {
-                return NotFound();
+                Korisnik korisnik = userDbRepository.Create(noviKorisnik);
+                if (korisnik == null)
+                {
+                    return NotFound();
+                }
+                return Ok(korisnik);
             }
-            return Ok(korisnik);
+            catch
+            {
+                return Problem("Error occured while fetching books.");
+            }
+
         }
         [HttpPut("{id}")]
         public ActionResult<Korisnik> Update(int id, [FromBody] Korisnik updatedKorisnik)
@@ -52,28 +72,44 @@ namespace drustvenaMreza.Controllers
             {
                 return BadRequest();
             }
-
-            Korisnik korisnik = userDbRepository.Update(id, updatedKorisnik);
-            if (korisnik == null)
+            try
             {
-                return NotFound();
+                Korisnik korisnik = userDbRepository.Update(id, updatedKorisnik);
+                if (korisnik == null)
+                {
+                    return NotFound();
+                }
+                return Ok(korisnik);
+            }
+            catch
+            {
+                return Problem("Error occured while fetching books.");
             }
 
-          
 
-            return Ok(korisnik);
+
+
+            
         }
         [HttpDelete("{id}")]
         public ActionResult<Korisnik> Delete(int id)
         {
 
-            int korisnikObrisan = userDbRepository.Delete(id);
-            if (korisnikObrisan == 0)
+            try
             {
-                return NotFound();
+                int korisnikObrisan = userDbRepository.Delete(id);
+                if (korisnikObrisan == 0)
+                {
+                    return NotFound();
+                }
+                return NoContent();
+            }
+            catch
+            {
+                return Problem("Error occured while fetching books.");
             }
 
-            return NoContent();
+
         }
         
     }

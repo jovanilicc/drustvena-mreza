@@ -6,12 +6,17 @@ namespace drustvenaMreza.Repozitorijumi
 {
     public class UserDbRepository
     {
+        private readonly string connectionString;
 
+        public UserDbRepository(IConfiguration configuration)
+        {
+            connectionString = configuration["ConnectionString:SQLiteConnection"];
+        }
         public List<Korisnik> GetAll()
         {
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=database/drustvenamreza.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
                 string query = "SELECT * FROM Users";
                 using SqliteCommand command = new SqliteCommand(query, connection);
@@ -37,27 +42,27 @@ namespace drustvenaMreza.Repozitorijumi
             }
             catch (SqliteException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Greška pri radu sa bazom podataka.";
-                return null;
+                Console.WriteLine("Greška pri radu sa bazom podataka. " + ex.Message);
+               
+                throw;
             }
             catch (FormatException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Greška u formatu podataka iz baze.";
-                return null;
+                Console.WriteLine("Greška u formatu podataka iz baze. " + ex.Message);
+               
+                throw;
             }
             catch (InvalidOperationException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Neispravna operacija nad bazom podataka.";
-                return null;
+                Console.WriteLine("Neispravna operacija nad bazom podataka. " + ex.Message);
+                
+                throw;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Došlo je do neočekivane greške.";
-                return null;
+                Console.WriteLine("Došlo je do neočekivane greške. " + ex.Message);
+             
+                throw;
             }
 
         }
@@ -65,7 +70,7 @@ namespace drustvenaMreza.Repozitorijumi
         {
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=database/drustvenamreza.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
                 string query = "SELECT * FROM Users WHERE Id = @Id";
                 using SqliteCommand command = new SqliteCommand(query, connection);
@@ -91,27 +96,27 @@ namespace drustvenaMreza.Repozitorijumi
             }
             catch (SqliteException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Greška pri radu sa bazom podataka.";
-                return null;
+                Console.WriteLine("Greška pri radu sa bazom podataka. " + ex.Message);
+              
+                throw;
             }
             catch (FormatException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Greška u formatu podataka iz baze.";
-                return null;
+                Console.WriteLine("Greška u formatu podataka iz baze. " +ex.Message);
+             
+                throw;
             }
             catch (InvalidOperationException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Neispravna operacija nad bazom podataka.";
-                return null;
+                Console.WriteLine("Neispravna operacija nad bazom podataka. " +ex.Message);
+                
+                throw;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Došlo je do neočekivane greške.";
-                return null;
+                Console.WriteLine("Došlo je do neočekivane greške. " + ex.Message);
+               
+                throw;
             }
         }
 
@@ -119,7 +124,7 @@ namespace drustvenaMreza.Repozitorijumi
         {
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=database/drustvenamreza.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
                 //Username, Name, Surname, Birthday
                 // Upit za umetanje novog korisnika i istovremeno vraćanje id-ja poslednjeg unetog reda
@@ -141,34 +146,34 @@ namespace drustvenaMreza.Repozitorijumi
             }
             catch (SqliteException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Greška pri radu sa bazom podataka.";
-                return null;
+                Console.WriteLine("Greška pri radu sa bazom podataka. " +ex.Message);
+                
+                throw;
             }
             catch (FormatException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Greška u formatu podataka iz baze.";
-                return null;
+                Console.WriteLine("Greška u formatu podataka iz baze. " +ex.Message);
+                
+                throw;
             }
             catch (InvalidOperationException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Neispravna operacija nad bazom podataka.";
-                return null;
+                Console.WriteLine("Neispravna operacija nad bazom podataka. " +ex.Message);
+               
+                throw;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Došlo je do neočekivane greške.";
-                return null;
+                Console.WriteLine("Došlo je do neočekivane greške. " +ex.Message);
+                
+                throw;
             }
         }
         public Korisnik Update(int id, Korisnik noviKorisnik)
         {
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=database/drustvenamreza.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
                 //Username, Name, Surname, Birthday
                 // Upit za menjanje novog korisnika i istovremeno vraćanje id-ja poslednjeg unetog reda
@@ -194,33 +199,34 @@ namespace drustvenaMreza.Repozitorijumi
                 if(rowsAffected == 0)
                 {
                     Console.WriteLine("Operacija izmene nije uspela." + rowsAffected);
+                    return null;
                 }
                 noviKorisnik.Id = id;
                 return noviKorisnik;
             }
             catch (SqliteException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Greška pri radu sa bazom podataka.";
-                return null;
+                Console.WriteLine("Greška pri radu sa bazom podataka. " + ex.Message);
+                
+                throw;
             }
             catch (FormatException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Greška u formatu podataka iz baze.";
-                return null;
+                Console.WriteLine("Greška u formatu podataka iz baze. " + ex.Message);
+               
+                throw;
             }
             catch (InvalidOperationException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Neispravna operacija nad bazom podataka.";
-                return null;
+                Console.WriteLine("Neispravna operacija nad bazom podataka. " + ex.Message);
+               
+                throw;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Došlo je do neočekivane greške.";
-                return null;
+                Console.WriteLine("Došlo je do neočekivane greške. " + ex.Message);
+             
+                throw;
             }
         }
 
@@ -228,7 +234,7 @@ namespace drustvenaMreza.Repozitorijumi
         {
             try
             {
-                using SqliteConnection connection = new SqliteConnection("Data Source=database/drustvenamreza.db");
+                using SqliteConnection connection = new SqliteConnection(connectionString);
                 connection.Open();
                 //Username, Name, Surname, Birthday
                 // Upit za brisanje novog korisnika
@@ -257,27 +263,27 @@ namespace drustvenaMreza.Repozitorijumi
             }
             catch (SqliteException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Greška pri radu sa bazom podataka.";
-                return 0;
+                Console.WriteLine("Greška pri radu sa bazom podataka. " + ex.Message);
+               
+                throw;
             }
             catch (FormatException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Greška u formatu podataka iz baze.";
-                return 0;
+                Console.WriteLine("Greška u formatu podataka iz baze. " + ex.Message);
+               
+                throw;
             }
             catch (InvalidOperationException ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Neispravna operacija nad bazom podataka.";
-                return 0;
+                Console.WriteLine("Neispravna operacija nad bazom podataka. " + ex.Message);
+               
+                throw;
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
-                //return "Došlo je do neočekivane greške.";
-                return 0;
+                Console.WriteLine("Došlo je do neočekivane greške. " + ex.Message);
+               
+                throw;
             }
         }
 
