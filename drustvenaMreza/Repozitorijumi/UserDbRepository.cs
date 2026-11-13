@@ -286,6 +286,92 @@ namespace drustvenaMreza.Repozitorijumi
                 throw;
             }
         }
+        public List<Korisnik> GetPaged(int page, int pageSize)
+        {
+            List<Korisnik> korisnici = new List<Korisnik>();
+            try
+            {
+                using SqliteConnection connection = new SqliteConnection(connectionString);
+                connection.Open();
+
+                string query = "SELECT * FROM Users LIMIT @PageSize OFFSET @Offset";
+                using SqliteCommand command = new SqliteCommand(query, connection);
+                command.Parameters.AddWithValue("@PageSize", pageSize);
+                command.Parameters.AddWithValue("@Offset", pageSize * (page - 1));
+
+                using SqliteDataReader reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+
+                    korisnici.Add(new Korisnik
+                        (
+                          Convert.ToInt32(reader["Id"]),
+                          reader["Username"].ToString(),
+                          reader["Name"].ToString(),
+                          reader["Surname"].ToString(),
+                          DateTime.Parse(reader["Birthday"].ToString())
+
+                        )
+                    );
+
+                }
+            }
+            catch (SqliteException ex)
+            {
+                Console.WriteLine($"Greška pri povezivanju sa bazom ili izvršavanju SQL upita: {ex.Message}");
+                throw;
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine($"Greška u formatu podataka: {ex.Message}");
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Greška jer konekcija nije ili je više puta otvorena: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Neočekivana greška: {ex.Message}");
+                throw;
+            }
+            return korisnici;
+        }
+        public int CountAll()
+        {
+
+            try
+            {
+                using SqliteConnection connection = new SqliteConnection(connectionString);
+                connection.Open();
+
+                string query = "SELECT COUNT(*) FROM Users";
+                using SqliteCommand command = new SqliteCommand(query, connection);
+                int totalCount = Convert.ToInt32(command.ExecuteScalar());
+                return totalCount;
+            }
+            catch (SqliteException ex)
+            {
+                Console.WriteLine($"Greška pri povezivanju sa bazom ili izvršavanju SQL upita: {ex.Message}");
+                throw;
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine($"Greška u formatu podataka: {ex.Message}");
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Greška jer konekcija nije ili je više puta otvorena: {ex.Message}");
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Neočekivana greška: {ex.Message}");
+                throw;
+            }
+        }
 
     }
 

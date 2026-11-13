@@ -17,14 +17,32 @@ namespace drustvenaMreza.Controllers
         {
             this.userDbRepository = new UserDbRepository(configuration);
         }
-        
+
         [HttpGet]
-        public ActionResult<List<Korisnik>> GetAll()
+        public ActionResult GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            List<Korisnik> korisnici = userDbRepository.GetAll();
-            return Ok(korisnici);
+            if (page < 1 || pageSize < 1)
+            {
+                return BadRequest("Page and PageSize must be greater than zero.");
+            }
+            try
+            {
+                List<Korisnik> korisnici = userDbRepository.GetPaged(page, pageSize);
+                int totalCount = userDbRepository.CountAll();
+                object result = new
+                {
+                    Data = korisnici,
+                    TotalCount = totalCount
+                };
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Problem("An error occurred while fetching users.");
+            }
         }
-        
+
 
         [HttpGet("{id}")]
         public ActionResult<Korisnik> GetById(int id)
@@ -42,6 +60,7 @@ namespace drustvenaMreza.Controllers
             }
             
         }
+        
         [HttpPost]
         public ActionResult<Korisnik> Create([FromBody] Korisnik noviKorisnik)
         {
