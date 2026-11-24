@@ -132,6 +132,63 @@ namespace drustvenaMreza.Repozitorijumi
 
                 throw;
             }
+
+           
+        }
+        public bool Delete(int id)
+        {
+            try
+            {
+                using SqliteConnection connection = new SqliteConnection(connectionString);
+                connection.Open();
+               
+                string query = @"DELETE FROM Posts WHERE Id = @Id";
+
+
+
+                using SqliteCommand command = new SqliteCommand(query, connection);
+
+
+
+                // Dodavanje parametara za objavu
+                command.Parameters.AddWithValue("@Id", id);
+
+
+
+                int rowsAffected = command.ExecuteNonQuery();
+
+                if (rowsAffected == 0)
+                {
+                    Console.WriteLine("Operacija brisanja nije uspela." + rowsAffected);
+                    return false;
+                }
+
+                return true;
+            }
+            catch (SqliteException ex)
+            {
+                Console.WriteLine("Greška pri radu sa bazom podataka. " + ex.Message);
+
+                throw;
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine("Greška u formatu podataka iz baze. " + ex.Message);
+
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine("Neispravna operacija nad bazom podataka. " + ex.Message);
+
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Došlo je do neočekivane greške. " + ex.Message);
+
+                throw;
+            }
         }
     }
 }

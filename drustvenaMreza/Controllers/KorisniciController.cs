@@ -127,7 +127,7 @@ namespace drustvenaMreza.Controllers
             }
             catch
             {
-                return Problem("Error occured while fetching books.");
+                return Problem("Error occured while deleting user.");
             }
 
 

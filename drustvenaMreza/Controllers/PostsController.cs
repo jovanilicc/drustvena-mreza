@@ -31,6 +31,27 @@ namespace drustvenaMreza.Controllers
                 return Problem("An error occurred while fetching users.");
             }
         }
-        
+
+        [HttpDelete("{postId}")]
+        public ActionResult Delete(int postId)
+        {
+
+            try
+            {
+                bool objavaObrisana = postDbRepository.Delete(postId);
+                if (!objavaObrisana)
+                {
+                    return NotFound();
+                }
+                return NoContent();
+            }
+            catch
+            {
+                return Problem("Error occured while deleting post.");
+            }
+
+
+        }
+
     }
 }
