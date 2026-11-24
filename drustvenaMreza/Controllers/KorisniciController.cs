@@ -12,10 +12,12 @@ namespace drustvenaMreza.Controllers
     public class KorisniciController : ControllerBase
     {
         private UserDbRepository userDbRepository;
+        private PostDbRepository postDbRepository;
 
         public KorisniciController(IConfiguration configuration)
         {
             this.userDbRepository = new UserDbRepository(configuration);
+            this.postDbRepository = new PostDbRepository(configuration);
         }
 
         [HttpGet]
@@ -130,6 +132,34 @@ namespace drustvenaMreza.Controllers
 
 
         }
-        
+        [HttpPost("{userId}/posts")]
+        public ActionResult<Objava> CreatePost(int userId,[FromBody] Objava novaObjava)
+        {
+            
+            if (string.IsNullOrWhiteSpace(novaObjava.Content) || userDbRepository.GetById(userId) == null)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                Korisnik autor = userDbRepository.GetById(userId);
+                if (autor == null)
+                {
+                    return NotFound();
+                }
+
+                novaObjava.UserId = userId;
+                novaObjava.User = autor;
+                Objava objava = postDbRepository.Create(novaObjava);
+                
+                return Ok(objava);
+            }
+            catch
+            {
+                return Problem("Error occured while fetching books.");
+            }
+
+        }
+
     }
 }

@@ -82,5 +82,56 @@ namespace drustvenaMreza.Repozitorijumi
             }
 
         }
+
+        public Objava Create(Objava objava)
+        {
+            try
+            {
+                using SqliteConnection connection = new SqliteConnection(connectionString);
+                connection.Open();
+                
+               
+                string query = @"INSERT INTO Posts (UserId,Content,Date) VALUES (@UserId,@Content, @Date); SELECT LAST_INSERT_ROWID();";
+
+                using SqliteCommand command = new SqliteCommand(query, connection);
+
+                // Dodavanje parametara za korisnika
+                command.Parameters.AddWithValue("@UserId", objava.UserId);
+                command.Parameters.AddWithValue("@Content", objava.Content);
+                command.Parameters.AddWithValue("@Date", objava.DatumObjave);
+                
+
+                // Izvršavanje oba upita, gde ExecuteScalar vraća id poslednjeg ubačenog reda
+                int lastInsertedId = Convert.ToInt32(command.ExecuteScalar());  // Izvršava oba upita i vraća id
+                Console.WriteLine($"ID poslednjeg unetog korisnika: {lastInsertedId}");
+                objava.Id = lastInsertedId;
+                
+                return objava;
+            }
+            catch (SqliteException ex)
+            {
+                Console.WriteLine("Greška pri radu sa bazom podataka. " + ex.Message);
+
+                throw;
+            }
+            catch (FormatException ex)
+            {
+                Console.WriteLine("Greška u formatu podataka iz baze. " + ex.Message);
+
+                throw;
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine("Neispravna operacija nad bazom podataka. " + ex.Message);
+
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Došlo je do neočekivane greške. " + ex.Message);
+
+                throw;
+            }
+        }
     }
 }
